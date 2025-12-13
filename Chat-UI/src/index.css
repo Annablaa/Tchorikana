@@ -1,0 +1,245 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 
+  Enterprise Chat Design System
+  - Neutral base colors for professional feel
+  - Soft blue accents for AI elements
+  - Clean, readable typography
+*/
+
+@layer base {
+  :root {
+    /* Base colors - neutral enterprise palette */
+    --background: 210 20% 98%;
+    --foreground: 220 20% 10%;
+
+    /* Cards & surfaces */
+    --card: 0 0% 100%;
+    --card-foreground: 220 20% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 20% 10%;
+
+    /* Primary - Messenger-style blue */
+    --primary: 214 100% 50%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary - Light gray surface */
+    --secondary: 210 20% 96%;
+    --secondary-foreground: 220 20% 20%;
+
+    /* Muted elements */
+    --muted: 210 15% 93%;
+    --muted-foreground: 215 15% 50%;
+
+    /* Accent - Subtle blue highlight */
+    --accent: 210 100% 97%;
+    --accent-foreground: 217 91% 50%;
+
+    /* Destructive actions */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* UI elements */
+    --border: 210 20% 90%;
+    --input: 210 20% 90%;
+    --ring: 217 91% 60%;
+
+    --radius: 0.75rem;
+
+    /* Chat-specific tokens */
+    --chat-bg: 210 20% 98%;
+    --message-human: 0 0% 100%;
+    --message-ai: 217 100% 97%;
+    --message-ai-border: 217 80% 90%;
+    --message-other: 0 0% 100%;
+    --ai-accent: 217 91% 60%;
+    --ai-accent-soft: 217 100% 95%;
+    --task-card: 45 100% 97%;
+    --task-card-border: 45 80% 85%;
+    --success: 142 76% 36%;
+    --success-soft: 142 76% 95%;
+
+    /* Sidebar */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 220 20% 20%;
+    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 100% 97%;
+    --sidebar-accent-foreground: 217 91% 50%;
+    --sidebar-border: 210 20% 90%;
+    --sidebar-ring: 217 91% 60%;
+  }
+
+  .dark {
+    --background: 220 20% 8%;
+    --foreground: 210 20% 95%;
+
+    --card: 220 20% 12%;
+    --card-foreground: 210 20% 95%;
+
+    --popover: 220 20% 12%;
+    --popover-foreground: 210 20% 95%;
+
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 15% 18%;
+    --secondary-foreground: 210 20% 90%;
+
+    --muted: 220 15% 20%;
+    --muted-foreground: 215 15% 60%;
+
+    --accent: 217 50% 20%;
+    --accent-foreground: 217 91% 70%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 15% 20%;
+    --input: 220 15% 20%;
+    --ring: 217 91% 60%;
+
+    --chat-bg: 220 20% 10%;
+    --message-human: 220 20% 15%;
+    --message-ai: 217 40% 15%;
+    --message-ai-border: 217 40% 25%;
+    --message-other: 220 20% 15%;
+    --ai-accent: 217 91% 60%;
+    --ai-accent-soft: 217 50% 20%;
+    --task-card: 45 30% 15%;
+    --task-card-border: 45 30% 25%;
+    --success: 142 76% 45%;
+    --success-soft: 142 30% 15%;
+
+    --sidebar-background: 220 20% 10%;
+    --sidebar-foreground: 210 20% 90%;
+    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 217 50% 20%;
+    --sidebar-accent-foreground: 217 91% 70%;
+    --sidebar-border: 220 15% 20%;
+    --sidebar-ring: 217 91% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html, body {
+    @apply bg-background text-foreground antialiased;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  #root {
+    height: 100%;
+    width: 100%;
+  }
+}
+
+@layer utilities {
+  /* Smooth scroll for chat */
+  .chat-scroll {
+    scroll-behavior: smooth;
+  }
+
+  /* Custom scrollbar for chat */
+  .chat-scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .chat-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .chat-scroll::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.3);
+    border-radius: 3px;
+  }
+
+  .chat-scroll::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.5);
+  }
+
+  /* Message bubble animations */
+  .message-enter {
+    animation: messageSlideIn 0.2s ease-out;
+  }
+
+  @keyframes messageSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Message highlight animation */
+  .message-highlight {
+    animation: messageHighlight 0.5s ease-out;
+  }
+
+  @keyframes messageHighlight {
+    0% {
+      background-color: transparent;
+    }
+    50% {
+      background-color: hsl(var(--primary) / 0.1);
+    }
+    100% {
+      background-color: transparent;
+    }
+  }
+
+  /* Sidebar scrollbar */
+  .sidebar-scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .sidebar-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .sidebar-scroll::-webkit-scrollbar-thumb {
+    background: hsl(var(--sidebar-foreground) / 0.2);
+    border-radius: 3px;
+  }
+
+  .sidebar-scroll::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--sidebar-foreground) / 0.3);
+  }
+
+  /* Typing indicator animation */
+  .typing-dot {
+    animation: typingBounce 1.4s infinite ease-in-out both;
+  }
+
+  .typing-dot:nth-child(1) {
+    animation-delay: -0.32s;
+  }
+
+  .typing-dot:nth-child(2) {
+    animation-delay: -0.16s;
+  }
+
+  @keyframes typingBounce {
+    0%, 80%, 100% {
+      transform: scale(0.8);
+      opacity: 0.5;
+    }
+    40% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+}
