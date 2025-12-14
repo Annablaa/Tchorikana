@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server'
 import { getSupabaseAdmin } from '@/lib/supabase/admin'
-import { corsHeaders } from '@/lib/cors'
+import { getCorsHeaders } from '@/lib/cors'
 import { generateEmbeddingsBatch } from '@/lib/ai/embeddings'
 
 // Handle OPTIONS (preflight) requests
-export async function OPTIONS() {
-  return new NextResponse(null, { headers: corsHeaders })
+export async function OPTIONS(request: Request) {
+  return new NextResponse(null, { headers: getCorsHeaders(request) })
 }
 
 // POST /api/messages/backfill - Add embeddings to existing messages that don't have them
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
     if (fetchError) {
       return NextResponse.json(
         { message: 'Error fetching messages', error: fetchError.message },
-        { status: 500, headers: corsHeaders }
+        { status: 500, headers: getCorsHeaders(request) }
       )
     }
 
@@ -43,7 +43,7 @@ export async function POST(request: Request) {
           processed: 0,
           total: 0,
         },
-        { headers: corsHeaders }
+        { headers: getCorsHeaders(request) }
       )
     }
 
@@ -59,7 +59,7 @@ export async function POST(request: Request) {
           processed: 0,
           total: messages.length,
         },
-        { headers: corsHeaders }
+        { headers: getCorsHeaders(request) }
       )
     }
 
@@ -75,7 +75,7 @@ export async function POST(request: Request) {
           message: 'Failed to generate embeddings',
           error: error instanceof Error ? error.message : 'Unknown error',
         },
-        { status: 500, headers: corsHeaders }
+        { status: 500, headers: getCorsHeaders(request) }
       )
     }
 
@@ -86,7 +86,7 @@ export async function POST(request: Request) {
           messagesCount: messagesToProcess.length,
           embeddingsCount: embeddings.length,
         },
-        { status: 500, headers: corsHeaders }
+        { status: 500, headers: getCorsHeaders(request) }
       )
     }
 
@@ -120,18 +120,18 @@ export async function POST(request: Request) {
         total: messagesToProcess.length,
         errorDetails: errors.length > 0 ? errors : undefined,
       },
-      { headers: corsHeaders }
+      { headers: getCorsHeaders(request) }
     )
   } catch (error: any) {
     return NextResponse.json(
       { message: 'Server error', error: error.message },
-      { status: 500, headers: corsHeaders }
+      { status: 500, headers: getCorsHeaders(request) }
     )
   }
 }
 
 // GET /api/messages/backfill - Get statistics about messages needing backfill
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const supabaseAdmin = getSupabaseAdmin()
 
@@ -144,7 +144,7 @@ export async function GET() {
     if (countError) {
       return NextResponse.json(
         { message: 'Error counting messages', error: countError.message },
-        { status: 500, headers: corsHeaders }
+        { status: 500, headers: getCorsHeaders(request) }
       )
     }
 
@@ -156,7 +156,7 @@ export async function GET() {
     if (totalError) {
       return NextResponse.json(
         { message: 'Error counting total messages', error: totalError.message },
-        { status: 500, headers: corsHeaders }
+        { status: 500, headers: getCorsHeaders(request) }
       )
     }
 
@@ -166,12 +166,12 @@ export async function GET() {
         total: total || 0,
         withEmbeddings: (total || 0) - (withoutEmbeddings || 0),
       },
-      { headers: corsHeaders }
+      { headers: getCorsHeaders(request) }
     )
   } catch (error: any) {
     return NextResponse.json(
       { message: 'Server error', error: error.message },
-      { status: 500, headers: corsHeaders }
+      { status: 500, headers: getCorsHeaders(request) }
     )
   }
 }

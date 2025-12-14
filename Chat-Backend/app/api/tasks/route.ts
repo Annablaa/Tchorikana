@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server'
 import { getSupabaseAdmin } from '@/lib/supabase/admin'
 import { CreateTaskDto, UpdateTaskDto } from '@/lib/types/entities'
-import { corsHeaders } from '@/lib/cors'
+import { getCorsHeaders } from '@/lib/cors'
 
 // Handle OPTIONS (preflight) requests
-export async function OPTIONS() {
-  return new NextResponse(null, { headers: corsHeaders })
+export async function OPTIONS(request: Request) {
+  return new NextResponse(null, { headers: getCorsHeaders(request) })
 }
 
 // GET /api/tasks
@@ -28,11 +28,11 @@ export async function GET(request: Request) {
       if (error) {
         return NextResponse.json(
           { message: 'Task not found', error: error.message },
-          { status: 404, headers: corsHeaders }
+          { status: 404, headers: getCorsHeaders(request) }
         )
       }
 
-      return NextResponse.json({ data }, { headers: corsHeaders })
+      return NextResponse.json({ data }, { headers: getCorsHeaders(request) })
     }
 
     let query = supabase.from('tasks').select('*')
@@ -54,15 +54,15 @@ export async function GET(request: Request) {
     if (error) {
       return NextResponse.json(
         { message: 'Error fetching tasks', error: error.message },
-        { status: 500, headers: corsHeaders }
+        { status: 500, headers: getCorsHeaders(request) }
       )
     }
 
-    return NextResponse.json({ data: data || [], count: count || data?.length || 0 }, { headers: corsHeaders })
+    return NextResponse.json({ data: data || [], count: count || data?.length || 0 }, { headers: getCorsHeaders(request) })
   } catch (error: any) {
     return NextResponse.json(
       { message: 'Server error', error: error.message },
-      { status: 500, headers: corsHeaders }
+      { status: 500, headers: getCorsHeaders(request) }
     )
   }
 }
@@ -75,21 +75,21 @@ export async function POST(request: Request) {
     if (!body.action || !body.summary || !body.proposed_by) {
       return NextResponse.json(
         { message: 'Missing required fields: action, summary, and proposed_by are required' },
-        { status: 400, headers: corsHeaders }
+        { status: 400, headers: getCorsHeaders(request) }
       )
     }
 
     if (body.action !== 'create' && body.action !== 'update' && body.action !== 'comment') {
       return NextResponse.json(
         { message: 'Invalid action: must be "create", "update", or "comment"' },
-        { status: 400, headers: corsHeaders }
+        { status: 400, headers: getCorsHeaders(request) }
       )
     }
 
     if (body.status && body.status !== 'pending' && body.status !== 'confirmed' && body.status !== 'rejected') {
       return NextResponse.json(
         { message: 'Invalid status: must be "pending", "confirmed", or "rejected"' },
-        { status: 400, headers: corsHeaders }
+        { status: 400, headers: getCorsHeaders(request) }
       )
     }
 
@@ -116,18 +116,18 @@ export async function POST(request: Request) {
     if (error) {
       return NextResponse.json(
         { message: 'Error creating task', error: error.message },
-        { status: 500, headers: corsHeaders }
+        { status: 500, headers: getCorsHeaders(request) }
       )
     }
 
     return NextResponse.json(
       { message: 'Task created successfully', data },
-      { status: 201, headers: corsHeaders }
+      { status: 201, headers: getCorsHeaders(request) }
     )
   } catch (error: any) {
     return NextResponse.json(
       { message: 'Server error', error: error.message },
-      { status: 500, headers: corsHeaders }
+      { status: 500, headers: getCorsHeaders(request) }
     )
   }
 }
@@ -140,7 +140,7 @@ export async function PUT(request: Request) {
     if (!body.id) {
       return NextResponse.json(
         { message: 'Task id is required' },
-        { status: 400, headers: corsHeaders }
+        { status: 400, headers: getCorsHeaders(request) }
       )
     }
 
@@ -151,7 +151,7 @@ export async function PUT(request: Request) {
       if (body.action !== 'create' && body.action !== 'update' && body.action !== 'comment') {
         return NextResponse.json(
           { message: 'Invalid action: must be "create", "update", or "comment"' },
-          { status: 400 }
+          { status: 400, headers: getCorsHeaders(request) }
         )
       }
       updateData.action = body.action
@@ -162,7 +162,7 @@ export async function PUT(request: Request) {
       if (body.status !== 'pending' && body.status !== 'confirmed' && body.status !== 'rejected') {
         return NextResponse.json(
           { message: 'Invalid status: must be "pending", "confirmed", or "rejected"' },
-          { status: 400 }
+          { status: 400, headers: getCorsHeaders(request) }
         )
       }
       updateData.status = body.status
@@ -172,7 +172,7 @@ export async function PUT(request: Request) {
     if (Object.keys(updateData).length === 0) {
       return NextResponse.json(
         { message: 'No fields to update' },
-        { status: 400, headers: corsHeaders }
+        { status: 400, headers: getCorsHeaders(request) }
       )
     }
 
@@ -187,25 +187,25 @@ export async function PUT(request: Request) {
     if (error) {
       return NextResponse.json(
         { message: 'Error updating task', error: error.message },
-        { status: 500, headers: corsHeaders }
+        { status: 500, headers: getCorsHeaders(request) }
       )
     }
 
     if (!data) {
       return NextResponse.json(
         { message: 'Task not found' },
-        { status: 404, headers: corsHeaders }
+        { status: 404, headers: getCorsHeaders(request) }
       )
     }
 
     return NextResponse.json(
       { message: 'Task updated successfully', data },
-      { status: 200, headers: corsHeaders }
+      { status: 200, headers: getCorsHeaders(request) }
     )
   } catch (error: any) {
     return NextResponse.json(
       { message: 'Server error', error: error.message },
-      { status: 500, headers: corsHeaders }
+      { status: 500, headers: getCorsHeaders(request) }
     )
   }
 }
@@ -220,7 +220,7 @@ export async function DELETE(request: Request) {
     if (!id) {
       return NextResponse.json(
         { message: 'Task id is required as query parameter' },
-        { status: 400, headers: corsHeaders }
+        { status: 400, headers: getCorsHeaders(request) }
       )
     }
 
@@ -232,18 +232,18 @@ export async function DELETE(request: Request) {
     if (error) {
       return NextResponse.json(
         { message: 'Error deleting task', error: error.message },
-        { status: 500, headers: corsHeaders }
+        { status: 500, headers: getCorsHeaders(request) }
       )
     }
 
     return NextResponse.json(
       { message: 'Task deleted successfully' },
-      { status: 200, headers: corsHeaders }
+      { status: 200, headers: getCorsHeaders(request) }
     )
   } catch (error: any) {
     return NextResponse.json(
       { message: 'Server error', error: error.message },
-      { status: 500, headers: corsHeaders }
+      { status: 500, headers: getCorsHeaders(request) }
     )
   }
 }

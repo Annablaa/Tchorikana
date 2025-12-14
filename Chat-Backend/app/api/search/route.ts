@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server'
 import { getSupabaseAdmin } from '@/lib/supabase/admin'
-import { corsHeaders } from '@/lib/cors'
+import { getCorsHeaders } from '@/lib/cors'
 import { generateEmbedding } from '@/lib/ai/embeddings'
 import { enhanceSearchResults } from '@/lib/ai/generate'
 
 // Handle OPTIONS (preflight) requests
-export async function OPTIONS() {
-  return new NextResponse(null, { headers: corsHeaders })
+export async function OPTIONS(request: Request) {
+  return new NextResponse(null, { headers: getCorsHeaders(request) })
 }
 
 // POST /api/search - Semantic search using vector similarity
@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     if (!query || typeof query !== 'string' || query.trim().length === 0) {
       return NextResponse.json(
         { message: 'Search query is required and must be a non-empty string' },
-        { status: 400, headers: corsHeaders }
+        { status: 400, headers: getCorsHeaders(request) }
       )
     }
 
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
           message: 'Failed to generate embedding for search query', 
           error: error instanceof Error ? error.message : 'Unknown error' 
         },
-        { status: 500, headers: corsHeaders }
+        { status: 500, headers: getCorsHeaders(request) }
       )
     }
 
@@ -65,7 +65,7 @@ export async function POST(request: Request) {
       if (queryError) {
         return NextResponse.json(
           { message: 'Error searching messages', error: queryError.message },
-          { status: 500, headers: corsHeaders }
+          { status: 500, headers: getCorsHeaders(request) }
         )
       }
 
@@ -77,7 +77,7 @@ export async function POST(request: Request) {
             count: 0,
             message: 'No messages with embeddings found in database',
           },
-          { headers: corsHeaders }
+          { headers: getCorsHeaders(request) }
         )
       }
 
@@ -226,7 +226,7 @@ export async function POST(request: Request) {
             warning: `No results found with similarity >= ${threshold}. Showing top results.`,
           } : {}),
         },
-        { headers: corsHeaders }
+        { headers: getCorsHeaders(request) }
       )
     }
 
@@ -246,12 +246,12 @@ export async function POST(request: Request) {
         results: formattedResults,
         count: formattedResults.length,
       },
-      { headers: corsHeaders }
+      { headers: getCorsHeaders(request) }
     )
   } catch (error: any) {
     return NextResponse.json(
       { message: 'Server error', error: error.message },
-      { status: 500, headers: corsHeaders }
+      { status: 500, headers: getCorsHeaders(request) }
     )
   }
 }

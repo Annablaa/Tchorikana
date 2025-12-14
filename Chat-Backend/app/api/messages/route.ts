@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server'
 import { getSupabaseAdmin } from '@/lib/supabase/admin'
 import { CreateMessageDto, UpdateMessageDto } from '@/lib/types/entities'
-import { corsHeaders } from '@/lib/cors'
+import { getCorsHeaders } from '@/lib/cors'
 import { generateEmbedding } from '@/lib/ai/embeddings'
 
 // Handle OPTIONS (preflight) requests
-export async function OPTIONS() {
-  return new NextResponse(null, { headers: corsHeaders })
+export async function OPTIONS(request: Request) {
+  return new NextResponse(null, { headers: getCorsHeaders(request) })
 }
 
 // GET /api/messages
@@ -28,11 +28,11 @@ export async function GET(request: Request) {
       if (error) {
         return NextResponse.json(
           { message: 'Message not found', error: error.message },
-          { status: 404, headers: corsHeaders }
+          { status: 404, headers: getCorsHeaders(request) }
         )
       }
 
-      return NextResponse.json({ data }, { headers: corsHeaders })
+      return NextResponse.json({ data }, { headers: getCorsHeaders(request) })
     }
 
     let query = supabase.from('messages').select('*')
@@ -50,15 +50,15 @@ export async function GET(request: Request) {
     if (error) {
       return NextResponse.json(
         { message: 'Error fetching messages', error: error.message },
-        { status: 500, headers: corsHeaders }
+        { status: 500, headers: getCorsHeaders(request) }
       )
     }
 
-    return NextResponse.json({ data: data || [], count: count || data?.length || 0 }, { headers: corsHeaders })
+    return NextResponse.json({ data: data || [], count: count || data?.length || 0 }, { headers: getCorsHeaders(request) })
   } catch (error: any) {
     return NextResponse.json(
       { message: 'Server error', error: error.message },
-      { status: 500, headers: corsHeaders }
+      { status: 500, headers: getCorsHeaders(request) }
     )
   }
 }
@@ -71,7 +71,7 @@ export async function POST(request: Request) {
     if (!body.conversation_id || !body.author_id || !body.content) {
       return NextResponse.json(
         { message: 'Missing required fields: conversation_id, author_id, and content are required' },
-        { status: 400, headers: corsHeaders }
+        { status: 400, headers: getCorsHeaders(request) }
       )
     }
 
@@ -112,18 +112,18 @@ export async function POST(request: Request) {
     if (error) {
       return NextResponse.json(
         { message: 'Error creating message', error: error.message },
-        { status: 500, headers: corsHeaders }
+        { status: 500, headers: getCorsHeaders(request) }
       )
     }
 
     return NextResponse.json(
       { message: 'Message created successfully', data },
-      { status: 201, headers: corsHeaders }
+      { status: 201, headers: getCorsHeaders(request) }
     )
   } catch (error: any) {
     return NextResponse.json(
       { message: 'Server error', error: error.message },
-      { status: 500, headers: corsHeaders }
+      { status: 500, headers: getCorsHeaders(request) }
     )
   }
 }
@@ -136,7 +136,7 @@ export async function PUT(request: Request) {
     if (!body.id) {
       return NextResponse.json(
         { message: 'Message id is required' },
-        { status: 400, headers: corsHeaders }
+        { status: 400, headers: getCorsHeaders(request) }
       )
     }
 
@@ -151,7 +151,7 @@ export async function PUT(request: Request) {
     if (Object.keys(updateData).length === 0) {
       return NextResponse.json(
         { message: 'No fields to update' },
-        { status: 400, headers: corsHeaders }
+        { status: 400, headers: getCorsHeaders(request) }
       )
     }
 
@@ -166,25 +166,25 @@ export async function PUT(request: Request) {
     if (error) {
       return NextResponse.json(
         { message: 'Error updating message', error: error.message },
-        { status: 500, headers: corsHeaders }
+        { status: 500, headers: getCorsHeaders(request) }
       )
     }
 
     if (!data) {
       return NextResponse.json(
         { message: 'Message not found' },
-        { status: 404, headers: corsHeaders }
+        { status: 404, headers: getCorsHeaders(request) }
       )
     }
 
     return NextResponse.json(
       { message: 'Message updated successfully', data },
-      { status: 200, headers: corsHeaders }
+      { status: 200, headers: getCorsHeaders(request) }
     )
   } catch (error: any) {
     return NextResponse.json(
       { message: 'Server error', error: error.message },
-      { status: 500, headers: corsHeaders }
+      { status: 500, headers: getCorsHeaders(request) }
     )
   }
 }
@@ -199,7 +199,7 @@ export async function DELETE(request: Request) {
     if (!id) {
       return NextResponse.json(
         { message: 'Message id is required as query parameter' },
-        { status: 400, headers: corsHeaders }
+        { status: 400, headers: getCorsHeaders(request) }
       )
     }
 
@@ -211,18 +211,18 @@ export async function DELETE(request: Request) {
     if (error) {
       return NextResponse.json(
         { message: 'Error deleting message', error: error.message },
-        { status: 500, headers: corsHeaders }
+        { status: 500, headers: getCorsHeaders(request) }
       )
     }
 
     return NextResponse.json(
       { message: 'Message deleted successfully' },
-      { status: 200, headers: corsHeaders }
+      { status: 200, headers: getCorsHeaders(request) }
     )
   } catch (error: any) {
     return NextResponse.json(
       { message: 'Server error', error: error.message },
-      { status: 500, headers: corsHeaders }
+      { status: 500, headers: getCorsHeaders(request) }
     )
   }
 }

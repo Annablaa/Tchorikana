@@ -7,8 +7,16 @@ const allowedOrigins = [
 // Function to get CORS headers based on request origin
 export function getCorsHeaders(request: Request): Record<string, string> {
   const origin = request.headers.get("origin");
-  const allowedOrigin = origin && allowedOrigins.includes(origin) 
-    ? origin 
+  
+  // Normalize origin (remove trailing slash for comparison)
+  const normalizedOrigin = origin ? origin.replace(/\/$/, '') : null;
+  
+  // Check if normalized origin matches any allowed origin (with or without trailing slash)
+  const allowedOrigin = normalizedOrigin && allowedOrigins.some(allowed => {
+    const normalizedAllowed = allowed.replace(/\/$/, '');
+    return normalizedOrigin === normalizedAllowed;
+  })
+    ? origin! // Use original origin (browser sends it as-is)
     : allowedOrigins[0]; // Default to first origin if not in allowed list
 
   return {

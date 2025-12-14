@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase/server'
-import { corsHeaders } from '@/lib/cors'
+import { getCorsHeaders } from '@/lib/cors'
 
-export async function OPTIONS() {
-  return new NextResponse(null, { headers: corsHeaders })
+export async function OPTIONS(request: Request) {
+  return new NextResponse(null, { headers: getCorsHeaders(request) })
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   console.log('🔍 [TEST] Starting Supabase connection test...')
   console.log('📋 [TEST] Environment variables:', {
     hasUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -44,7 +44,7 @@ export async function GET() {
           connectionStatus: 'connected',
           queryStatus: 'failed'
         },
-        { status: 200, headers: corsHeaders }
+        { status: 200, headers: getCorsHeaders(request) }
       )
     }
 
@@ -57,7 +57,7 @@ export async function GET() {
       connectionStatus: 'connected',
       queryStatus: 'success',
       recordCount: data?.length || 0
-    }, { headers: corsHeaders })
+    }, { headers: getCorsHeaders(request) })
   } catch (error: any) {
     console.error('❌ [TEST] Connection error:', error.message)
     console.error('🔍 [TEST] Error stack:', error.stack)
@@ -68,7 +68,7 @@ export async function GET() {
         connectionStatus: 'failed',
         check: 'Make sure your .env or .env.local file has the correct Supabase credentials (NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY)'
       },
-      { status: 500, headers: corsHeaders }
+      { status: 500, headers: getCorsHeaders(request) }
     )
   }
 }
